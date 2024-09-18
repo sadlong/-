@@ -289,3 +289,311 @@ UDP是一种无连接的传输协议，提供简单、搞笑的数据传输机�
 创建QDialog项目-->在ui下的windowTitle修改窗口名"UDP网络服务器"-->在.pro文件中第二行加上`QT += network`->右键Headers选中add new...，创建类的时候一定要继承QObject类
 ![1725618947058](C:\Users\123\AppData\Roaming\Typora\typora-user-images\1725618947058.png)
 
+然后，需要在udpservercomm.h文件中申明变量如下：
+![1725676726087](C:\Users\123\AppData\Roaming\Typora\typora-user-images\1725676726087.png)
+
+
+
+**成果展示**
+
+![1725676514079](C:\Users\123\AppData\Roaming\Typora\typora-user-images\1725676514079.png)
+
+因为没有服务端程序连接上，所以什么都没有显示...
+
+
+
+
+
+##  天气预报系统
+
+**项目准备工作**
+
+首先导入图片，这个方法已经在3种技术模块中提到了，就不再说了。然后就是在.pro文件中第二行加入`Qt += network`和在.h文件中加入一些头文件的声明，头文件申明如下图：
+
+
+**成果展示**
+
+![1725761197540](C:\Users\123\AppData\Roaming\Typora\typora-user-images\1725761197540.png)
+
+
+
+**项目总结**
+半成品项目，实话说至少还是学到了一点东西的，下拉框控件：Combo Box，日历控件：Calendar Widget，空白框控件：List Widget，时间显示控件：LCD Number。然后就是项目视频中提到如何添加下拉框的元素和显示系统时间到LCD管上。巩固了添加图片的操作。
+
+
+
+**报错解决**
+
+error: No rule to make target '../Qt_Weather_Prs/images/?.jpg', needed by 'debug/qrc_images.cpp'.  Stop.
+原因是我的图片是中文名，也不知道为什么改成数字就好使了
+
+
+
+
+
+##  汽车仪表盘
+
+**项目创建**
+
+与以往创建项目不同的是，这一次要把ui那个选项取消勾选，然后选择的基类是QWidget
+
+
+
+
+
+##  Qt5开发文字处理软件项目
+
+
+
+##  QML
+
+###  QML-Window介绍
+
+在这一节主要是介绍了Window控件的一些调用，不会的话就去帮助文档搜索Window去试试。除此之外还有一次实例应用：`焦点在哪个控件上`，这里是给出了两个button控件来通过鼠标点击和键盘按钮来改变焦点位置，同时在改变的过程中用颜色高亮和控制台输出来证实程序的正确性，完整代码如下：
+
+```cpp
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.5
+
+Window {
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("Hello World")
+
+    //以屏幕左上角为(0,0),运行之后窗口就会显示在相对于源点(50, 50)的位置
+    x: 600
+    y: 300
+
+    //限定窗口大小，不能被拉伸 方法就是都对应上width和height的数值一样
+    minimumWidth: 640
+    minimumHeight: 480
+    maximumWidth: 640
+    maximumHeight: 480
+
+    //透明度范围0-1
+    opacity: 0.8
+
+    //内置信号与槽函数 这个例子是改变窗口宽度来输出当前宽度 要调用这个槽函数通常是on+空间名称然后会显示出来
+//    onWidthChanged: {
+//        console.log("width:", width)
+//    }
+
+    Button {
+        id: btn1
+        objectName: "btn1"  //控件起名字
+        focus: true //默认以btn1聚焦
+        width: 50
+        height: 50
+        background: Rectangle {
+            border.color: btn1.focus ? "blue" : "black"
+        }
+
+        //鼠标点击事件
+        onClicked: {
+            console.log("btn1 clicked")
+        }
+
+        //点击键盘右键事件
+        Keys.onRightPressed: {
+            btn2.focus = true
+        }
+    }
+
+    Button {
+        id: btn2
+        objectName: "btn2"
+        x: 100
+        width: 50
+        height: 50
+        background: Rectangle {
+            border.color: btn2.focus ? "blue" : "black"
+        }
+        onClicked: {
+            console.log("btn2 clicked")
+        }
+        Keys.onLeftPressed: {
+            btn1.focus = true
+        }
+    }
+
+    onActiveFocusItemChanged: {
+        console.log("active focus item changed", activeFocusItem, "object name:", activeFocusItem.objectName)
+    }
+}
+```
+
+
+
+
+
+###  QML-Item与Rectangle
+
+**解决哪个控件在上方的问题**
+
+```cpp
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.5
+
+Window {
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("My QML")
+    color: "white"
+
+    Rectangle {
+        x: 100
+        y: 100
+        z: 1    //不加这一行默认蓝色矩形会覆盖黑色矩形，z坐标默认是0
+        width: 100
+        height: 50
+        color: "black"
+    }
+
+    Rectangle {
+        x: 120
+        y: 120
+        width: 100
+        height: 50
+        color: "blue"
+    }
+
+}
+```
+
+在这段代码中如果将`z:1`注释掉会让蓝色矩形覆盖掉黑色矩形，如果想要达到黑色矩形在上方的话就需要加上那一行
+
+
+
+**鼠标选中聚焦后接收键盘信息**
+
+```cpp
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.5
+
+Window {
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("My QML")
+    color: "white"
+
+    Rectangle {
+        x: 100
+        y: 100
+        width: 100
+        height: 50
+        color: "black"
+        focus: true	//设置默认聚焦
+
+        MouseArea {
+            anchors.fill: parent	//填充在父控件当中
+            onClicked: {
+                console.log("on clicked")
+            }
+        }
+
+        //鼠标点击矩形框之后按下enter键就会在控制台上输出
+        Keys.onReturnPressed: {
+            console.log("on return pressed")
+        }
+    }
+}
+```
+
+
+
+
+
+**anchor用法**
+
+```cpp
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.5
+
+Window {
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("My QML")
+    color: "white"
+
+    Rectangle {
+        id: rect1
+        width: 50
+        height: 50
+        color: "black"
+        anchors.centerIn: parent    //控件居中 但是不知道为什么加了这一句另外两个控件显示就不对了
+    }
+
+    Rectangle {
+        id: rect2
+        width: 100
+        height: 50
+        anchors.left: rect1.right	//将rect2的左边接在rect1的右边
+        anchors.leftMargin: 20	//设置两个控件之间的距离
+        color: "black"
+    }
+
+    Rectangle {
+        id: rect3
+        width: 100
+        height: 50
+        anchors.top: rect1.bottom	//将rect2的顶边接在rect1的下面
+        anchors.topMargin: 20	//设置两个控件之间的距离
+        color: "black"
+    }
+}
+```
+
+显示效果如下：
+![1726657285613](C:\Users\123\AppData\Roaming\Typora\typora-user-images\1726657285613.png)
+
+
+
+**scale和rotation**
+
+- `scale: num`用来放缩控件，num是多少就放大多少倍
+- `rotation: num`用来旋转控件，num是多少就顺时针旋转多少度
+
+```cpp
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.5
+
+Window {
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("My QML")
+    color: "white"
+
+    Rectangle {
+        width: 100
+        height: 50
+        color: "black"
+        border.width: 2 //边框粗细调节 越大越粗
+        border.color: "green"  //边框颜色
+        anchors.centerIn: parent    //将控件居中 以父控件为中心
+        rotation: 30    //顺时针旋转30度
+        scale: 2    //放缩控件，数字是多少就方法多少倍
+        radius: 15  //调整圆角幅度 数值越大幅度越大
+    }
+
+
+    //渐变色gradient样例
+    Rectangle {
+        y: 100; width: 80; height: 80
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "lightsteelblue" }
+            GradientStop { position: 1.0; color: "blue" }
+        }
+    }
+}
+```
+
