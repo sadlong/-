@@ -121,3 +121,22 @@ git clone url
 这里的url是指仓库的地址，在哪里找呢？---找到你要clone的仓库点击绿色按钮code，复制https的一串就是url
 ```
 
+
+
+
+
+##  在新的文件夹中push代码步骤
+
+将文件夹TCP客户端提交到git@github.com:sadlong/Qt-program-list.git中的main分支
+
+```cpp
+$ git init
+$ git remote add origin git@github.com:sadlong/Qt-program-list.git
+$ git pull origin main
+$ git checkout -b main
+$ git add TCP客户端
+$ git commit -m '网络编程入门'
+$ git push -u origin main
+```
+
+主要是要有git pull ...的步骤来更新之前提交过的状态
